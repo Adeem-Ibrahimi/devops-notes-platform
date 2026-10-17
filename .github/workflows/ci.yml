@@ -33,3 +33,15 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t notes-api:ci .
+      - name: Job summary
+        if: always()
+        run: |
+          TESTS=$(cat build/test-results/test/*.xml 2>/dev/null | grep -o 'tests="[0-9]*"' | grep -o '[0-9]*' | awk '{s+=$1} END{print s+0}')
+          FAILS=$(cat build/test-results/test/*.xml 2>/dev/null | grep -o 'failures="[0-9]*"' | grep -o '[0-9]*' | awk '{s+=$1} END{print s+0}')
+          {
+            echo "## CI summary"
+            echo "- Commit: ${GITHUB_SHA::7}"
+            echo "- Branch: ${GITHUB_REF_NAME}"
+            echo "- Tests run: ${TESTS}, failures: ${FAILS}"
+            echo "- Docker image size: $(docker images notes-api:ci --format '{{.Size}}')"
+          } >> "$GITHUB_STEP_SUMMARY"
