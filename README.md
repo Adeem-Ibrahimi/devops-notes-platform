@@ -28,3 +28,26 @@ same; the Docker, pipeline and infrastructure files around it are new work.
 - Final image: 386 MB on disk (122 MB compressed)
 - App connects to PostgreSQL through environment variables
 - Notes survive docker compose down and up (data lives in the volume)
+
+
+## Task 3: CI/CD pipeline
+
+GitHub Actions workflow (.github/workflows/ci.yml) runs on every push to
+main and on pull requests. Steps run in order, and a failure stops the rest:
+
+1. Pull the code (actions/checkout)
+2. Set up Java 21 with a Gradle cache
+3. Lint with Checkstyle (main and test code)
+4. Run the unit tests
+5. Build the Docker image
+6. Write a job summary (commit, branch, tests run, image size)
+
+Checkstyle is configured in notes-api/config/checkstyle/checkstyle.xml. Its
+first run on this code caught two real issues (a star import and tab
+characters), which were fixed before the pipeline went green.
+
+**Results** (screenshots in proof/task3/)
+- Pipeline green on GitHub: 5 steps plus summary, about 2 minutes per run
+- Job summary: 2 tests run, 0 failures
+- Image size: 262 MB as reported in CI (Docker Desktop reports 386 MB for the
+  same image; the two tools measure size differently)
