@@ -83,6 +83,8 @@ characters), which were fixed before the pipeline went green.
 - Validated and planned offline: Plan is 7 to add, 0 to change, 0 to destroy.
   The provider uses mock credentials, so no AWS account or cost is involved.
 
+**Try it**
+
     cd terraform
     terraform init
     terraform plan
