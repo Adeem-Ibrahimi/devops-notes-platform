@@ -51,3 +51,26 @@ characters), which were fixed before the pipeline went green.
 - Job summary: 2 tests run, 0 failures
 - Image size: 262 MB as reported in CI (Docker Desktop reports 386 MB for the
   same image; the two tools measure size differently)
+
+## Task 4: Kubernetes and infrastructure as code
+
+**Kubernetes** (k8s/notes-platform.yaml, cluster config in k8s/kind-config.yaml)
+- Local cluster created with kind (Kubernetes in Docker)
+- Postgres Deployment with a PersistentVolumeClaim (1Gi) for its data
+- App Deployment (notes-api), with database credentials injected from a
+  Kubernetes Secret created from .env, so no password is stored in git
+- Services for both; an Ingress (ingress-nginx) routes http://localhost:8081
+  to the app
+- Horizontal Pod Autoscaler: 1 to 3 replicas, target 50 percent CPU, using
+  metrics-server
+
+**Terraform** (terraform/main.tf)
+- Isolated AWS network as code: VPC, public and private subnets, internet
+  gateway, public route table and association, security group (80 and 443)
+- Validated and planned offline: Plan is 7 to add, 0 to change, 0 to destroy.
+  The provider uses mock credentials so no AWS account or cost is involved.
+
+**Results** (screenshots in proof/task4/)
+- Both pods Running, PVC Bound, Ingress and HPA present
+- Notes created through the Ingress and stored in Postgres on the PVC
+- terraform plan: 7 resources
